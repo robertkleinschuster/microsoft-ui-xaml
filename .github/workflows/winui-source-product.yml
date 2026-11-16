@@ -19,15 +19,21 @@ concurrency:
 
 jobs:
   product:
-    name: WinUI product (x64 Debug)
+    name: WinUI product (${{ matrix.flavor }})
     runs-on: windows-2025-vs2026
     timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [x64chk, x64fre]
     env:
+      WINUI_FLAVOR: ${{ matrix.flavor }}
       NUGET_PACKAGES: ${{ github.workspace }}\packages
       DOTNET_CLI_TELEMETRY_OPTOUT: '1'
       DOTNET_NOLOGO: '1'
       VisualStudioVersion: '18.0'
       NuGetAudit: 'false'
+      CL: '/MP2'
 
     steps:
       - name: Check out source
@@ -44,19 +50,30 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          .\init.ps1 x64chk /notitle
+          $flavor = $env:WINUI_FLAVOR
+          if ($flavor -eq 'x64fre') {
+            .\init.ps1 $flavor /nopgo /notitle
+          } else {
+            .\init.ps1 $flavor /notitle
+          }
           if ($LASTEXITCODE -ne 0) { throw "WinUI initialization failed with exit code $LASTEXITCODE" }
 
           $env:VisualStudioVersion = '18.0'
           $env:NuGetAudit = 'false'
-          .\initrun.ps1 -Flavor x64chk .\build.cmd product /restore /q
+          if ($flavor -eq 'x64fre') {
+            $env:PGOBuildMode = 'Off'
+            .\build.cmd product /restore /q
+          } else {
+            .\initrun.ps1 -Flavor $flavor .\build.cmd product /restore /q
+          }
           if ($LASTEXITCODE -ne 0) { throw "WinUI product build failed with exit code $LASTEXITCODE" }
 
       - name: Verify and describe product payload
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $payload = 'BuildOutput\packaging\Debug\runtimes\win10-x64\native'
+          $configuration = if ($env:WINUI_FLAVOR -eq 'x64fre') { 'Release' } else { 'Debug' }
+          $payload = "BuildOutput\packaging\$configuration\runtimes\win10-x64\native"
           $package = 'PackageStore\Microsoft.WindowsAppSDK.WinUI.3.0.0-dev.nupkg'
           if (-not (Test-Path -LiteralPath $payload)) { throw "Missing product payload: $payload" }
           if (-not (Test-Path -LiteralPath $package)) { throw "Missing WinUI package: $package" }
@@ -67,7 +84,8 @@ jobs:
             commit = $env:GITHUB_SHA
             visualStudio = '2026'
             visualStudioVersion = '18.0'
-            flavor = 'x64chk'
+            flavor = $env:WINUI_FLAVOR
+            configuration = $configuration
             payload = $payload
             payloadFileCount = $fileCount
             package = $package
@@ -78,9 +96,9 @@ jobs:
       - name: Upload WinUI product artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: winui-product-x64-debug-${{ github.sha }}
+          name: winui-product-${{ matrix.flavor }}-${{ github.sha }}
           path: |
-            BuildOutput/packaging/Debug/runtimes/win10-x64/native/**
+            BuildOutput/packaging/${{ matrix.flavor == 'x64fre' && 'Release' || 'Debug' }}/runtimes/win10-x64/native/**
             PackageStore/Microsoft.WindowsAppSDK.WinUI.3.0.0-dev.nupkg
             BuildOutput/winui-build-info.json
           if-no-files-found: error
@@ -90,7 +108,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v6
         with:
-          name: winui-build-logs-${{ github.sha }}
+          name: winui-build-logs-${{ matrix.flavor }}-${{ github.sha }}
           path: |
             BuildOutput/**/*.binlog
             BuildOutput/**/*.log
