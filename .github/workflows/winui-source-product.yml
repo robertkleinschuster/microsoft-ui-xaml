@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - fix/ink-unprocessedinput-pointer-snapshots
+      - fix/ink-pointer-snapshots-2.6.6-experimental
   pull_request:
     branches:
       - main
@@ -34,6 +35,10 @@ jobs:
       VisualStudioVersion: '18.0'
       NuGetAudit: 'false'
       CL: '/MP2'
+    # Release tags (winui3/release/*) keep the product sources under src/.
+    defaults:
+      run:
+        working-directory: src
 
     steps:
       - name: Check out source
@@ -44,7 +49,7 @@ jobs:
 
       - name: Prepare runner disk
         shell: pwsh
-        run: .\.github\scripts\prepare-winui-runner.ps1
+        run: ..\.github\scripts\prepare-winui-runner.ps1
 
       - name: Initialize and build product
         shell: pwsh
@@ -74,9 +79,10 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $configuration = if ($env:WINUI_FLAVOR -eq 'x64fre') { 'Release' } else { 'Debug' }
           $payload = "BuildOutput\packaging\$configuration\runtimes\win10-x64\native"
-          $package = 'PackageStore\Microsoft.WindowsAppSDK.WinUI.3.0.0-dev.nupkg'
           if (-not (Test-Path -LiteralPath $payload)) { throw "Missing product payload: $payload" }
-          if (-not (Test-Path -LiteralPath $package)) { throw "Missing WinUI package: $package" }
+          $packages = @(Get-ChildItem -Path 'PackageStore' -Filter 'Microsoft.WindowsAppSDK.WinUI.*.nupkg' -File)
+          if ($packages.Count -ne 1) { throw "Expected one WinUI package in PackageStore, found $($packages.Count)" }
+          $package = $packages[0].FullName
 
           $fileCount = (Get-ChildItem -LiteralPath $payload -File -Recurse).Count
           if ($fileCount -eq 0) { throw 'The product payload is empty.' }
@@ -98,9 +104,9 @@ jobs:
         with:
           name: winui-product-${{ matrix.flavor }}-${{ github.sha }}
           path: |
-            BuildOutput/packaging/${{ matrix.flavor == 'x64fre' && 'Release' || 'Debug' }}/runtimes/win10-x64/native/**
-            PackageStore/Microsoft.WindowsAppSDK.WinUI.3.0.0-dev.nupkg
-            BuildOutput/winui-build-info.json
+            src/BuildOutput/packaging/${{ matrix.flavor == 'x64fre' && 'Release' || 'Debug' }}/runtimes/win10-x64/native/**
+            src/PackageStore/Microsoft.WindowsAppSDK.WinUI.*.nupkg
+            src/BuildOutput/winui-build-info.json
           if-no-files-found: error
           retention-days: 14
 
@@ -110,7 +116,7 @@ jobs:
         with:
           name: winui-build-logs-${{ matrix.flavor }}-${{ github.sha }}
           path: |
-            BuildOutput/**/*.binlog
-            BuildOutput/**/*.log
+            src/BuildOutput/**/*.binlog
+            src/BuildOutput/**/*.log
           if-no-files-found: ignore
           retention-days: 7
