@@ -48,6 +48,11 @@
     <AppxBundlePlatforms>x86|x64|ARM64</AppxBundlePlatforms>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup>
+    <!-- Keep the SDK target versions after the Windows Store defaults are imported. -->
+    <TargetPlatformVersion>$(WindowsSdkTargetPlatformVersion)</TargetPlatformVersion>
+    <TargetPlatformMinVersion>$(WindowsAppSdkTargetPlatformVersion)</TargetPlatformMinVersion>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
