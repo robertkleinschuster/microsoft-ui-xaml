@@ -1,0 +1,98 @@
+name: WinUI source product
+
+on:
+  push:
+    branches:
+      - main
+      - fix/ink-unprocessedinput-pointer-snapshots
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: winui-source-product-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  product:
+    name: WinUI product (x64 Debug)
+    runs-on: windows-2025-vs2026
+    timeout-minutes: 180
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}\packages
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      VisualStudioVersion: '18.0'
+      NuGetAudit: 'false'
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Prepare runner disk
+        shell: pwsh
+        run: .\.github\scripts\prepare-winui-runner.ps1
+
+      - name: Initialize and build product
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          .\init.ps1 x64chk /notitle
+          if ($LASTEXITCODE -ne 0) { throw "WinUI initialization failed with exit code $LASTEXITCODE" }
+
+          $env:VisualStudioVersion = '18.0'
+          $env:NuGetAudit = 'false'
+          .\initrun.ps1 -Flavor x64chk .\build.cmd product /restore /q
+          if ($LASTEXITCODE -ne 0) { throw "WinUI product build failed with exit code $LASTEXITCODE" }
+
+      - name: Verify and describe product payload
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $payload = 'BuildOutput\packaging\Debug\runtimes\win10-x64\native'
+          $package = 'PackageStore\Microsoft.WindowsAppSDK.WinUI.3.0.0-dev.nupkg'
+          if (-not (Test-Path -LiteralPath $payload)) { throw "Missing product payload: $payload" }
+          if (-not (Test-Path -LiteralPath $package)) { throw "Missing WinUI package: $package" }
+
+          $fileCount = (Get-ChildItem -LiteralPath $payload -File -Recurse).Count
+          if ($fileCount -eq 0) { throw 'The product payload is empty.' }
+          $info = [ordered]@{
+            commit = $env:GITHUB_SHA
+            visualStudio = '2026'
+            visualStudioVersion = '18.0'
+            flavor = 'x64chk'
+            payload = $payload
+            payloadFileCount = $fileCount
+            package = $package
+          }
+          $info | ConvertTo-Json | Set-Content -LiteralPath 'BuildOutput\winui-build-info.json' -Encoding utf8
+          Write-Host "Verified $fileCount runtime files."
+
+      - name: Upload WinUI product artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: winui-product-x64-debug-${{ github.sha }}
+          path: |
+            BuildOutput/packaging/Debug/runtimes/win10-x64/native/**
+            PackageStore/Microsoft.WindowsAppSDK.WinUI.3.0.0-dev.nupkg
+            BuildOutput/winui-build-info.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: winui-build-logs-${{ github.sha }}
+          path: |
+            BuildOutput/**/*.binlog
+            BuildOutput/**/*.log
+          if-no-files-found: ignore
+          retention-days: 7
