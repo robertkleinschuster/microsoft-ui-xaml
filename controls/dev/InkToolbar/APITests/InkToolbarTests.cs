@@ -4,6 +4,7 @@
 using Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.UI;
 using Microsoft.UI.Xaml.Controls;
@@ -1452,6 +1453,66 @@ namespace Microsoft.UI.Xaml.Tests.MUXControls.ApiTests
                     flyout.Closed -= closedHandler;
                 });
             }
+        }
+
+        [TestMethod]
+        public void InkToolbarCustomToolButtonCheckedAndExtensionGlyphStatesTest()
+        {
+            InkToolbar toolbar = null;
+            InkToolbarCustomToolButton withOptions = null;
+            InkToolbarCustomToolButton withoutOptions = null;
+            using var loaded = new ManualResetEvent(false);
+            RunOnUIThread.Execute(() =>
+            {
+                withOptions = new InkToolbarCustomToolButton { Content = new SymbolIcon(Symbol.SelectAll), ConfigurationContent = new TextBlock { Text = "Options" } };
+                withoutOptions = new InkToolbarCustomToolButton { Content = new SymbolIcon(Symbol.Highlight) };
+                toolbar = new InkToolbar { InitialControls = InkToolbarInitialControls.PensOnly };
+                toolbar.Children.Add(withOptions);
+                toolbar.Children.Add(withoutOptions);
+                toolbar.Loaded += (s, e) => loaded.Set();
+                Content = toolbar;
+            });
+            Verify.IsTrue(loaded.WaitOne(DefaultWaitTimeInMS), "The toolbar must load.");
+            IdleSynchronizer.Wait();
+
+            RunOnUIThread.Execute(() =>
+            {
+                var pen = toolbar.GetToolButton(InkToolbarTool.BallpointPen);
+                Verify.IsNotNull(pen, "The stock pen must be created.");
+                Verify.AreEqual((object)pen, toolbar.ActiveTool, "The first pen should be active after load.");
+                VerifyToolButtonStates(pen, "Checked", "ShowExtensionGlyph", "The active pen");
+                VerifyToolButtonStates(withOptions, "Normal", "HideExtensionGlyph", "An inactive custom tool");
+
+                // An active custom tool looks checked like every other tool; its chevron tells that it has options.
+                toolbar.ActiveTool = withOptions;
+                toolbar.UpdateLayout();
+                VerifyToolButtonStates(withOptions, "Checked", "ShowExtensionGlyph", "An active custom tool with ConfigurationContent");
+                VerifyToolButtonStates(pen, "Normal", "HideExtensionGlyph", "An inactive pen");
+
+                // Without ConfigurationContent there is nothing to open: checked, but no chevron.
+                toolbar.ActiveTool = withoutOptions;
+                toolbar.UpdateLayout();
+                VerifyToolButtonStates(withoutOptions, "Checked", "HideExtensionGlyph", "An active custom tool without ConfigurationContent");
+                VerifyToolButtonStates(withOptions, "Normal", "HideExtensionGlyph", "A deactivated custom tool");
+            });
+        }
+
+        private static void VerifyToolButtonStates(Control button, string commonState, string glyphState, string description)
+        {
+            var root = FindChildByName(button, "RootElement");
+            Verify.IsNotNull(root, $"{description}: the template root must be realized.");
+            var groups = VisualStateManager.GetVisualStateGroups(root);
+            var common = groups.FirstOrDefault(g => g.Name == "CommonStates");
+            var glyph = groups.FirstOrDefault(g => g.Name == "GlyphVisualStates");
+            Verify.IsNotNull(common, $"{description}: the template must define CommonStates.");
+            Verify.IsNotNull(glyph, $"{description}: the template must define GlyphVisualStates.");
+            Verify.AreEqual(commonState, common.CurrentState?.Name ?? "Normal", $"{description}: CommonStates.");
+            Verify.AreEqual(glyphState, glyph.CurrentState?.Name, $"{description}: GlyphVisualStates.");
+
+            var extensionGlyph = FindChildByName(button, "ExtensionGlyph");
+            Verify.IsNotNull(extensionGlyph, $"{description}: the extension glyph must be realized.");
+            Verify.AreEqual(glyphState == "ShowExtensionGlyph" ? 1.0 : 0.0, extensionGlyph.Opacity,
+                $"{description}: the extension glyph's opacity follows IsExtensionGlyphShown.");
         }
 
         private static T FindDescendant<T>(DependencyObject root) where T : class
