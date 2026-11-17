@@ -6,6 +6,7 @@
 #include "paltypes.h"
 #include "Events.h"
 #include "XcpList.h"
+#include <vector>
 
 class CInputManager;
 
@@ -36,6 +37,9 @@ namespace ContentRootInput
         _Check_return_ HRESULT ProcessPointerInput(
             _In_ InputMessage *pMsg,
             _Out_ XINT32 *handled);
+
+        // XCP_POINTERROUTEDAWAY / XCP_POINTERROUTEDTO: remembers which pointers are routed away from this content root.
+        void ProcessPointerRouting(_In_ const InputMessage *pMsg);
 
         InputMessage* GetCurrentMsgForDirectManipulationProcessing() const;
         void SetCurrentMsgForDirectManipulationProcessing(_In_opt_ InputMessage* inputMessage);
@@ -134,6 +138,14 @@ namespace ContentRootInput
 
         xref_ptr<CPointer> GetPointerForPointerInfo(_In_ const PointerInfo& pointerInfo);
         xref_ptr<CPointer> m_cachedPointer;
+
+        bool IsPointerRoutedAway(_In_ XUINT32 pointerId) const;
+        bool TakePointerRoutedAway(_In_ XUINT32 pointerId);
+
+        // Pointers routed away from this content root (WM_POINTERROUTEDAWAY) that have neither been routed back
+        // (WM_POINTERROUTEDTO) nor been released by the other target (WM_POINTERROUTEDRELEASED). They keep their
+        // pointer state, including capture, meanwhile.
+        std::vector<XUINT32> m_routedAwayPointerIds;
 
     };
 };

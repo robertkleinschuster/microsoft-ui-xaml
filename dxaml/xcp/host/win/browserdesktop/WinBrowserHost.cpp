@@ -1034,6 +1034,8 @@ void CXcpBrowserHost::HandleInputMessage(
     case WM_POINTERHWHEEL:
     case WM_POINTERCAPTURECHANGED:
     case WM_POINTERROUTEDAWAY:
+    case WM_POINTERROUTEDTO:
+    case WM_POINTERROUTEDRELEASED:
     case DM_POINTERHITTEST:
         IFC(HandlePointerMessage(uMsg, pMsgPack, pMsg.get(), contentRoot, fHandled));
         break;
@@ -1054,11 +1056,6 @@ void CXcpBrowserHost::HandleInputMessage(
     case WM_MOVE:
         pMsg->m_msgID = XCP_WINDOWMOVE;
         break;
-
-    case WM_POINTERROUTEDTO: // Don't handle these cases
-    case WM_POINTERROUTEDRELEASED:
-        fHandled = FALSE;
-        goto Cleanup;
 
     default:
         break;

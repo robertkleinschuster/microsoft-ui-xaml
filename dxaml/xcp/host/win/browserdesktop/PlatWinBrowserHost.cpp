@@ -47,7 +47,15 @@ CXcpBrowserHost::HandlePointerMessage(_In_ XUINT32 uMsg, _In_ MsgPacket *pMsgPac
         case DM_POINTERHITTEST:
             pMsg->m_msgID = XCP_DMPOINTERHITTEST;
             break;
+        // A pointer routed away keeps its state (capture included) until it is routed back or released
+        // by the other target; see PointerInputProcessor::ProcessPointerRouting.
         case WM_POINTERROUTEDAWAY:
+            pMsg->m_msgID = XCP_POINTERROUTEDAWAY;
+            break;
+        case WM_POINTERROUTEDTO:
+            pMsg->m_msgID = XCP_POINTERROUTEDTO;
+            break;
+        case WM_POINTERROUTEDRELEASED:
             pMsg->m_msgID = XCP_POINTERSUSPENDED;
             break;
         default:
@@ -63,6 +71,8 @@ CXcpBrowserHost::HandlePointerMessage(_In_ XUINT32 uMsg, _In_ MsgPacket *pMsgPac
         uMsg == WM_POINTERHWHEEL ||
         uMsg == WM_POINTERCAPTURECHANGED ||
         uMsg == WM_POINTERROUTEDAWAY ||
+        uMsg == WM_POINTERROUTEDTO ||
+        uMsg == WM_POINTERROUTEDRELEASED ||
         uMsg == DM_POINTERHITTEST)
     {
         const UINT32 pointerId = GET_POINTERID_WPARAM(pMsgPack->m_wParam);

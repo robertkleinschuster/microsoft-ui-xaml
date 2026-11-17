@@ -855,6 +855,10 @@ HRESULT CInputServices::ProcessInput(_In_ InputMessage *pMsg, _In_ CContentRoot*
         contentRoot->GetInputManager().SetShouldAllRequestFocusSound(false);
         shouldPlayInteractionSound = true;
         break;
+    case XCP_POINTERROUTEDAWAY:
+    case XCP_POINTERROUTEDTO:
+        contentRoot->GetInputManager().GetPointerInputProcessor().ProcessPointerRouting(pMsg);
+        break;
     case XCP_DMPOINTERHITTEST:
         IFC_RETURN(ProcessDirectManipulationPointerHitTest(pMsg, contentRoot, handled));
         break;

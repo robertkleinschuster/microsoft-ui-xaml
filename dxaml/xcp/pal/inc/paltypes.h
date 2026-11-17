@@ -593,8 +593,10 @@ enum MessageMap
     XCP_DEADCHAR = 41,
     XCP_DMPOINTERHITTEST = 42,
     XCP_CONTEXTMENU = 43,
-    XCP_POINTERSUSPENDED = 44,
+    XCP_POINTERSUSPENDED = 44,   // WM_POINTERROUTEDRELEASED: a pointer routed away was released by the other target
     XCP_WINDOWMOVE = 45,
+    XCP_POINTERROUTEDAWAY = 46,  // WM_POINTERROUTEDAWAY: the pointer's input goes to another target for now
+    XCP_POINTERROUTEDTO = 47,    // WM_POINTERROUTEDTO: an ongoing pointer's input comes (back) to this target
 };
 
 // Enumeration representing editing concepts that are usually (but not always)

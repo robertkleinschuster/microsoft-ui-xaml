@@ -41,9 +41,17 @@ namespace Microsoft { namespace UI { namespace Xaml { namespace Tests {
             END_TEST_METHOD()
 
             BEGIN_TEST_METHOD(PointerRoutedAway)
-                TEST_METHOD_PROPERTY(L"Description", L"Inject a WM_POINTERROUTEDAWAY message and expect a PointerCaptureLost event.")
+                TEST_METHOD_PROPERTY(L"Description", L"Inject WM_POINTERROUTEDAWAY, then WM_POINTERROUTEDRELEASED, and expect a PointerCaptureLost event only after the release.")
                 TEST_METHOD_PROPERTY(L"TestPass:IncludeOnlyOn", L"Desktop")
                 TEST_METHOD_PROPERTY(L"Hosting:Mode", L"WPF")
+                TEST_METHOD_PROPERTY(L"VelocityTestPass:OneCoreStrict", L"Desktop")
+                TEST_METHOD_PROPERTY(L"Ignore", L"TRUE") // Replace PointerPointStatics::GetCurrentPoint and GetIntermediatePointsTransformed
+            END_TEST_METHOD()
+
+            BEGIN_TEST_METHOD(PointerRoutedAwayAndBack)
+                TEST_METHOD_PROPERTY(L"Description", L"Inject WM_POINTERROUTEDAWAY, then WM_POINTERROUTEDTO, and expect the pointer to keep its capture.")
+                TEST_METHOD_PROPERTY(L"TestPass:IncludeOnlyOn", L"Desktop")
+                TEST_METHOD_PROPERTY(L"Hosting:Mode", L"UAP") // This test injects WM_POINTERROUTED*, which doesn't work on Islands
                 TEST_METHOD_PROPERTY(L"VelocityTestPass:OneCoreStrict", L"Desktop")
                 TEST_METHOD_PROPERTY(L"Ignore", L"TRUE") // Replace PointerPointStatics::GetCurrentPoint and GetIntermediatePointsTransformed
             END_TEST_METHOD()
