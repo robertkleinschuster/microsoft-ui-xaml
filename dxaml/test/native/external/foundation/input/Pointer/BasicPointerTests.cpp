@@ -7,6 +7,7 @@
 #include <TestEvent.h>
 #include <TestCleanupWrapper.h>
 #include <SafeEventRegistration.h>
+#include <atomic>
 
 using namespace Windows::UI::Core;
 using namespace Microsoft::UI::Xaml;
@@ -541,23 +542,22 @@ namespace Microsoft { namespace UI { namespace Xaml { namespace Tests {
             VERIFY_ARE_EQUAL(button4ClickCount, 2);
         }
 
-        void BasicPointerTests::PointerRoutedAway()
+        // Presses a button (which captures the pointer), injects the given routing messages and returns the number of
+        // PointerCaptureLost events the button got before the pointer is released.
+        static int PressButtonAndRoutePointer(std::initializer_list<UINT> routingMessages)
         {
             Grid^ mainGrid = nullptr;
-            StackPanel^ stackPanel = nullptr;
             Button^ button = nullptr;
             UINT pointerId = 0;
-            std::shared_ptr<Event> buttonPointerCaptureLostEvent = std::make_shared<Event>();
+            std::atomic<int> captureLostCount{ 0 };
             std::shared_ptr<Event> buttonPointerEnteredEvent = std::make_shared<Event>();
-            wf::EventRegistrationToken buttonPointerCaptureLostToken = {};
-            wf::EventRegistrationToken buttonPointerEnteredToken = {};
             XamlRoot^ xamlRoot = nullptr;
 
             RunOnUIThread([&]()
             {
                 mainGrid = ref new Grid();
 
-                stackPanel = ref new StackPanel();
+                StackPanel^ stackPanel = ref new StackPanel();
                 stackPanel->HorizontalAlignment = HorizontalAlignment::Stretch;
                 stackPanel->VerticalAlignment = VerticalAlignment::Stretch;
                 stackPanel->Background = ref new SolidColorBrush(Microsoft::UI::Colors::Blue);
@@ -568,14 +568,12 @@ namespace Microsoft { namespace UI { namespace Xaml { namespace Tests {
                 button->Content = "First Button";
                 stackPanel->Children->Append(button);
 
-                buttonPointerCaptureLostToken = button->PointerCaptureLost +=
-                    ref new PointerEventHandler([buttonPointerCaptureLostEvent](Platform::Object^, PointerRoutedEventArgs^ args)
+                button->PointerCaptureLost += ref new PointerEventHandler([&captureLostCount](Platform::Object^, PointerRoutedEventArgs^)
                 {
-                    buttonPointerCaptureLostEvent->Set();
+                    ++captureLostCount;
                 });
 
-                buttonPointerEnteredToken = button->PointerEntered +=
-                    ref new PointerEventHandler([&pointerId, buttonPointerEnteredEvent](Platform::Object^, PointerRoutedEventArgs^ args)
+                button->PointerEntered += ref new PointerEventHandler([&pointerId, buttonPointerEnteredEvent](Platform::Object^, PointerRoutedEventArgs^ args)
                 {
                     // Get the pointer ID.
                     pointerId = args->Pointer->PointerId;
@@ -596,11 +594,37 @@ namespace Microsoft { namespace UI { namespace Xaml { namespace Tests {
             buttonPointerEnteredEvent->WaitForDefault();
             TestServices::WindowHelper->WaitForIdle();
 
-            TestServices::WindowHelper->InjectWindowMessage(WM_POINTERROUTEDAWAY, pointerId, 0, xamlRoot);
-            // Expect button fire PointCaptureLost event.
-            buttonPointerCaptureLostEvent->WaitForDefault();
+            for (UINT message : routingMessages)
+            {
+                TestServices::WindowHelper->InjectWindowMessage(message, pointerId, 0, xamlRoot);
+            }
+            TestServices::WindowHelper->WaitForIdle();
+
+            const int result = captureLostCount;
             TestServices::InputHelper->DynamicRelease(PointerFinger::Finger1);
             TestServices::WindowHelper->WaitForIdle();
+
+            // The handlers refer to this frame: take the button out of the tree before returning.
+            RunOnUIThread([&]()
+            {
+                TestServices::WindowHelper->WindowContent = nullptr;
+            });
+            TestServices::WindowHelper->WaitForIdle();
+            return result;
+        }
+
+        void BasicPointerTests::PointerRoutedAway()
+        {
+            // While the pointer is routed away, it keeps its capture...
+            VERIFY_ARE_EQUAL(0, PressButtonAndRoutePointer({ WM_POINTERROUTEDAWAY }));
+            // ...which ends when the other target reports the release.
+            VERIFY_ARE_EQUAL(1, PressButtonAndRoutePointer({ WM_POINTERROUTEDAWAY, WM_POINTERROUTEDRELEASED }));
+        }
+
+        void BasicPointerTests::PointerRoutedAwayAndBack()
+        {
+            // A pointer routed away and back keeps its capture.
+            VERIFY_ARE_EQUAL(0, PressButtonAndRoutePointer({ WM_POINTERROUTEDAWAY, WM_POINTERROUTEDTO }));
         }
 
         void BasicPointerTests::CanLeftMouseClick()

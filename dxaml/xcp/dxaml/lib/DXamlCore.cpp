@@ -4409,11 +4409,11 @@ BOOLEAN DXamlCore::InjectWindowMessage(_In_ UINT msg, _In_ UINT wParam, _In_ UIN
         ctl::ComPtr<XamlRoot> spXamlRoot;
         IFCFAILFAST(xamlRoot->QueryInterface(IID_PPV_ARGS(&spXamlRoot)));
 
-        if (msg == WM_POINTERROUTEDAWAY)
+        if (msg == WM_POINTERROUTEDAWAY || msg == WM_POINTERROUTEDTO || msg == WM_POINTERROUTEDRELEASED)
         {
             // Xaml now always requires a PointerPoint, and tests don't create one when injecting a pointer message.
-            // Only one test injects any sort of pointer message - BasicPointerTests::PointerRoutedAway - so make
-            // up a PointerPoint for it.
+            // Only the pointer routing tests (BasicPointerTests::PointerRoutedAway*) inject pointer messages - so make
+            // up a PointerPoint for them.
 
             wrl::ComPtr<ixp::IPointerPoint> currentPointerPoint;
             const auto jupiterWindow = m_pControl->GetJupiterWindow();

@@ -16,6 +16,7 @@
 
 #include "PointerAnimationUsingKeyFrames.h"
 #include "RuntimeEnabledFeatures.h"
+#include <algorithm>
 
 #include "RootVisual.h"
 #include "InputPaneHandler.h"
@@ -168,6 +169,41 @@ _Check_return_ HRESULT PointerInputProcessor::RaiseRightTappedEventFromContextMe
     return S_OK;
 }
 
+void PointerInputProcessor::ProcessPointerRouting(_In_ const InputMessage *pMsg)
+{
+    const XUINT32 pointerId = pMsg->m_pointerInfo.m_pointerId;
+    if (pMsg->m_msgID == XCP_POINTERROUTEDAWAY)
+    {
+        if (!IsPointerRoutedAway(pointerId))
+        {
+            m_routedAwayPointerIds.push_back(pointerId);
+        }
+    }
+    else
+    {
+        ASSERT(pMsg->m_msgID == XCP_POINTERROUTEDTO);
+        // Routed back: the pointer's state is still here and its input continues. A pointer routed here that began
+        // elsewhere has no state here; Win32 sends no WM_POINTERDOWN for it, and XAML does not start an interaction.
+        TakePointerRoutedAway(pointerId);
+    }
+}
+
+bool PointerInputProcessor::IsPointerRoutedAway(_In_ XUINT32 pointerId) const
+{
+    return std::find(m_routedAwayPointerIds.begin(), m_routedAwayPointerIds.end(), pointerId) != m_routedAwayPointerIds.end();
+}
+
+bool PointerInputProcessor::TakePointerRoutedAway(_In_ XUINT32 pointerId)
+{
+    const auto it = std::find(m_routedAwayPointerIds.begin(), m_routedAwayPointerIds.end(), pointerId);
+    if (it == m_routedAwayPointerIds.end())
+    {
+        return false;
+    }
+    m_routedAwayPointerIds.erase(it);
+    return true;
+}
+
 _Check_return_ HRESULT PointerInputProcessor::ProcessPointerInput(
     _In_ InputMessage *pMsg,
     _Out_ XINT32 *handled)
@@ -183,6 +219,38 @@ _Check_return_ HRESULT PointerInputProcessor::ProcessPointerInput(
     xref_ptr<CDependencyObject> pPointerCaptureDO;
 
     bool raiseCaptureLostOnCancel = false;
+
+    // Pointer routing (Microsoft.UI.Input.InputPointerSource PointerRoutedAway/To/Released, WM_POINTERROUTED*): while a
+    // pointer is routed away, its input goes to another target and this content root keeps the pointer's state, including
+    // its capture - Win32 does not change pointer capture when it routes a pointer away either (WM_POINTERROUTEDAWAY is
+    // sent instead of WM_POINTERCAPTURECHANGED/WM_POINTERUP). The interaction ends here only when the other target
+    // reports the release (XCP_POINTERSUSPENDED, from WM_POINTERROUTEDRELEASED): then the capture is released and
+    // PointerCaptureLost is raised, as before for the route-away itself.
+    if (pMsg->m_msgID == XCP_POINTERSUSPENDED)
+    {
+        if (!TakePointerRoutedAway(pMsg->m_pointerInfo.m_pointerId))
+        {
+            // Not a pointer routed away from this content root: nothing to end.
+            return S_OK;
+        }
+    }
+    else if (!pMsg->IsReplayedMessage() && IsPointerRoutedAway(pMsg->m_pointerInfo.m_pointerId))
+    {
+        if (pMsg->m_msgID == XCP_POINTERDOWN)
+        {
+            // A new press of a pointer that was routed away without being routed back or reported released: end
+            // the old interaction first.
+            InputMessage suspendedMsg = *pMsg;
+            suspendedMsg.m_msgID = XCP_POINTERSUSPENDED;
+            XINT32 suspendedHandled = FALSE;
+            IFC_RETURN(ProcessPointerInput(&suspendedMsg, &suspendedHandled));
+        }
+        else
+        {
+            // Input of the pointer arrives here again: it is back.
+            TakePointerRoutedAway(pMsg->m_pointerInfo.m_pointerId);
+        }
+    }
 
     TraceProcessPointerInputBegin(pMsg->m_pointerInfo.m_pointerId, static_cast<XUINT32>(pMsg->m_msgID), pMsg->m_pointerInfo.m_pointerLocation.x, pMsg->m_pointerInfo.m_pointerLocation.y);
 
