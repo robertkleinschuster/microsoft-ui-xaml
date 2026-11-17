@@ -52,7 +52,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPointerOver">
@@ -64,7 +63,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPressed">
@@ -76,7 +74,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedDisabled">
@@ -88,9 +85,16 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="GlyphVisualStates">
+                <VisualState x:Name="ShowExtensionGlyph">
+                  <VisualState.Setters>
                     <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="HideExtensionGlyph" />
               </VisualStateGroup>
               <VisualStateGroup x:Name="FlowDirectionStates">
                 <VisualState x:Name="LeftToRight" />
@@ -210,7 +214,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPointerOver">
@@ -222,7 +225,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPressed">
@@ -234,7 +236,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedDisabled">
@@ -246,9 +247,16 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="GlyphVisualStates">
+                <VisualState x:Name="ShowExtensionGlyph">
+                  <VisualState.Setters>
                     <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="HideExtensionGlyph" />
               </VisualStateGroup>
               <VisualStateGroup x:Name="FlowDirectionStates">
                 <VisualState x:Name="LeftToRight" />
@@ -368,7 +376,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPointerOver">
@@ -380,7 +387,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPressed">
@@ -392,7 +398,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedDisabled">
@@ -404,9 +409,16 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="GlyphVisualStates">
+                <VisualState x:Name="ShowExtensionGlyph">
+                  <VisualState.Setters>
                     <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="HideExtensionGlyph" />
               </VisualStateGroup>
               <VisualStateGroup x:Name="FlowDirectionStates">
                 <VisualState x:Name="LeftToRight" />
@@ -519,7 +531,6 @@
                     <Setter Target="Border.BorderBrush" Value="{ThemeResource InkToolbarButtonSelectedBorderBrush}" />
                     <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonSelectedForeground}" />
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPointerOver">
@@ -528,7 +539,6 @@
                     <Setter Target="Border.BorderBrush" Value="{ThemeResource InkToolbarButtonSelectedBorderBrushPointerOver}" />
                     <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonSelectedForegroundPointerOver}" />
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPressed">
@@ -537,7 +547,6 @@
                     <Setter Target="Border.BorderBrush" Value="{ThemeResource InkToolbarButtonSelectedBorderBrushPressed}" />
                     <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonSelectedForegroundPressed}" />
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedDisabled">
@@ -546,9 +555,16 @@
                     <Setter Target="Border.BorderBrush" Value="{ThemeResource InkToolbarButtonSelectedBorderBrushDisabled}" />
                     <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonSelectedForegroundDisabled}" />
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="GlyphVisualStates">
+                <VisualState x:Name="ShowExtensionGlyph">
+                  <VisualState.Setters>
                     <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="HideExtensionGlyph" />
               </VisualStateGroup>
               <VisualStateGroup x:Name="FlowDirectionStates">
                 <VisualState x:Name="LeftToRight" />
@@ -745,7 +761,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPointerOver">
@@ -757,7 +772,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPressed">
@@ -769,7 +783,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedDisabled">
@@ -781,9 +794,16 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="GlyphVisualStates">
+                <VisualState x:Name="ShowExtensionGlyph">
+                  <VisualState.Setters>
                     <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="HideExtensionGlyph" />
               </VisualStateGroup>
               <VisualStateGroup x:Name="FlowDirectionStates">
                 <VisualState x:Name="LeftToRight" />
@@ -885,6 +905,46 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                   </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="Checked">
+                  <VisualState.Setters>
+                    <Setter Target="RootElement.Background" Value="{ThemeResource InkToolbarButtonSelectedBackground}" />
+                    <Setter Target="Border.BorderBrush" Value="{ThemeResource InkToolbarButtonSelectedBorderBrush}" />
+                    <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonSelectedForeground}" />
+                    <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CheckedPointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="RootElement.Background" Value="{ThemeResource InkToolbarButtonSelectedBackgroundPointerOver}" />
+                    <Setter Target="Border.BorderBrush" Value="{ThemeResource InkToolbarButtonSelectedBorderBrushPointerOver}" />
+                    <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonSelectedForegroundPointerOver}" />
+                    <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CheckedPressed">
+                  <VisualState.Setters>
+                    <Setter Target="RootElement.Background" Value="{ThemeResource InkToolbarButtonSelectedBackgroundPressed}" />
+                    <Setter Target="Border.BorderBrush" Value="{ThemeResource InkToolbarButtonSelectedBorderBrushPressed}" />
+                    <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonSelectedForegroundPressed}" />
+                    <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CheckedDisabled">
+                  <VisualState.Setters>
+                    <Setter Target="RootElement.Background" Value="{ThemeResource InkToolbarButtonSelectedBackgroundDisabled}" />
+                    <Setter Target="Border.BorderBrush" Value="{ThemeResource InkToolbarButtonSelectedBorderBrushDisabled}" />
+                    <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonSelectedForegroundDisabled}" />
+                    <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="GlyphVisualStates">
+                <VisualState x:Name="ShowExtensionGlyph">
+                  <VisualState.Setters>
+                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="HideExtensionGlyph" />
               </VisualStateGroup>
               <VisualStateGroup x:Name="FlowDirectionStates">
                 <VisualState x:Name="LeftToRight" />
@@ -986,7 +1046,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPointerOver">
@@ -998,7 +1057,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPressed">
@@ -1010,7 +1068,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedDisabled">
@@ -1022,7 +1079,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
               </VisualStateGroup>
@@ -1168,7 +1224,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPressed">
@@ -1180,7 +1235,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedDisabled">
@@ -1192,7 +1246,6 @@
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
                     <Setter Target="Content.Opacity" Value="0" />
                     <Setter Target="CheckedContent.Opacity" Value="1" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedPointerOver">
@@ -1202,7 +1255,6 @@
                     <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonForegroundPointerOver}" />
                     <Setter Target="CheckedContent.Foreground" Value="{ThemeResource InkToolbarButtonHoverForegroundThemeBrush}" />
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
-                    <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="IndeterminatePointerOver">
@@ -1212,9 +1264,16 @@
                     <Setter Target="Content.Foreground" Value="{ThemeResource InkToolbarButtonForegroundPointerOver}" />
                     <Setter Target="CheckedContent.Foreground" Value="{ThemeResource InkToolbarButtonHoverForegroundThemeBrush}" />
                     <Setter Target="ExtensionGlyph.Foreground" Value="{ThemeResource InkToolbarAccentColorForegroundThemeBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="GlyphVisualStates">
+                <VisualState x:Name="ShowExtensionGlyph">
+                  <VisualState.Setters>
                     <Setter Target="ExtensionGlyph.Opacity" Value="1" />
                   </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="HideExtensionGlyph" />
               </VisualStateGroup>
               <VisualStateGroup x:Name="FlowDirectionStates">
                 <VisualState x:Name="LeftToRight" />
