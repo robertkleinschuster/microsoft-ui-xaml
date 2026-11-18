@@ -1008,27 +1008,23 @@ void InkToolbar::UpdateInkDrawingAttributes(winrt::InkToolbarToolButton const& t
         return;
     }
 
-    auto toolKind = toolButton.ToolKind();
-
-    // Build the base attributes per tool kind so Pencil produces pencil-kind ink and Highlighter
-    // produces highlighter ink (copying default attributes would only carry color/width).
-    winrt::InkDrawingAttributes attrs{ nullptr };
-    if (toolKind == winrt::InkToolbarTool::Pencil)
+    // As in UWP, the pen button builds the attributes (InkToolbarPenButton::CreateInkDrawingAttributes): the
+    // ballpoint pen a circle tip, the pencil pencil-kind ink, the highlighter a chisel tip drawn as highlighter, and
+    // a custom pen button whatever its InkToolbarCustomPen's CreateInkDrawingAttributesCore returns (DrawAsHighlighter,
+    // PenTip, IgnorePressure, FitToCurve, ...). Building them here from the tool kind alone gave every custom pen
+    // plain ballpoint attributes with only its color and width, so a highlighter custom pen drew opaque ink.
+    winrt::InkDrawingAttributes attrs = winrt::get_self<InkToolbarPenButton>(penButton)->CreateInkDrawingAttributes();
+    if (!attrs)
     {
-        attrs = winrt::InkDrawingAttributes::CreateForPencil();
-    }
-    else
-    {
+        // A custom pen button without a CustomPen: the selected color and width.
         attrs = winrt::InkDrawingAttributes();
-        attrs.DrawAsHighlighter(toolKind == winrt::InkToolbarTool::Highlighter);
-    }
+        float w = InkToolbarPenButton::DetermineStrokeWidth(penButton);
+        attrs.Size({ w, w });
 
-    float w = static_cast<float>(penButton.SelectedStrokeWidth());
-    attrs.Size({ w, w });
-
-    if (auto solidBrush = penButton.SelectedBrush().try_as<winrt::SolidColorBrush>())
-    {
-        attrs.Color(solidBrush.Color());
+        if (auto solidBrush = penButton.SelectedBrush().try_as<winrt::SolidColorBrush>())
+        {
+            attrs.Color(solidBrush.Color());
+        }
     }
 
     InkDrawingAttributes(attrs);

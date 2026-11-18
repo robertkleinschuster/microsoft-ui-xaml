@@ -40,6 +40,8 @@ public:
 
     // UWP static: stroke width in DIPs from the pen button's SelectedStrokeWidth + Min/Max range.
     static float DetermineStrokeWidth(winrt::InkToolbarPenButton const& penButton);
+    // The same for this button, for the leaf buttons' CreateInkDrawingAttributes.
+    float DetermineStrokeWidth();
 
     // UWP IPenButtonDerived (implemented by concrete leaf pen buttons).
     virtual bool SupportsDynamicStrokeWidthChange() { return true; }

@@ -23,8 +23,8 @@ public:
         SetDefaultStyleKey(this);
 
         // A highlighter must look like a highlighter: bold color (Yellow, index 0) and a wide tip,
-        // so its ink is clearly distinct from the thin ballpoint pen. DrawAsHighlighter (set by the
-        // toolbar) then renders it translucent.
+        // so its ink is clearly distinct from the thin ballpoint pen. DrawAsHighlighter (set by
+        // CreateInkDrawingAttributes below) then renders it translucent.
         SelectedBrushIndex(0);
         SelectedStrokeWidth(16.0);
     }
@@ -60,8 +60,7 @@ public:
         {
             attrs.Color(solid.Color());
         }
-        auto self = this->try_as<winrt::InkToolbarPenButton>();
-        float w = InkToolbarPenButton::DetermineStrokeWidth(self);
+        float w = DetermineStrokeWidth();
         // UWP highlighter uses a chisel nib: Width = strokeWidth / 3, Height = strokeWidth.
         attrs.Size({ w / 3.0f, w });
         attrs.PenTip(winrt::Windows::UI::Input::Inking::PenTipShape::Rectangle);

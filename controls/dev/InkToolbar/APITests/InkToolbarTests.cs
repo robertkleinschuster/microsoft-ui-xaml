@@ -708,6 +708,56 @@ namespace Microsoft.UI.Xaml.Tests.MUXControls.ApiTests
             });
         }
 
+        // A custom pen that overrides CreateInkDrawingAttributesCore, like an app's highlighter pen.
+        private sealed class TestHighlighterPen : InkToolbarCustomPen
+        {
+            protected override InkDrawingAttributes CreateInkDrawingAttributesCore(Brush brush, double strokeWidth)
+            {
+                return new InkDrawingAttributes
+                {
+                    Color = (brush as SolidColorBrush)?.Color ?? Colors.Yellow,
+                    Size = new global::Windows.Foundation.Size(strokeWidth, strokeWidth),
+                    PenTip = global::Windows.UI.Input.Inking.PenTipShape.Rectangle,
+                    IgnorePressure = true,
+                    FitToCurve = false,
+                    DrawAsHighlighter = true,
+                };
+            }
+        }
+
+        [TestMethod]
+        public void InkToolbarCustomPenOverrideTest()
+        {
+            RunOnUIThread.Execute(() =>
+            {
+                var pen = new TestHighlighterPen();
+                var attrs = pen.CreateInkDrawingAttributes(new SolidColorBrush(Colors.Green), 12.0);
+                Verify.IsTrue(attrs.DrawAsHighlighter, "CreateInkDrawingAttributes should return the derived pen's attributes.");
+                Verify.AreEqual(global::Windows.UI.Input.Inking.PenTipShape.Rectangle, attrs.PenTip, "PenTip should come from the override.");
+                Verify.IsFalse(attrs.FitToCurve, "FitToCurve should come from the override.");
+                Verify.AreEqual(Colors.Green, attrs.Color, "Color should come from the brush passed to the override.");
+            });
+        }
+
+        [TestMethod]
+        public void InkToolbarCustomPenButtonDrawingAttributesTest()
+        {
+            RunOnUIThread.Execute(() =>
+            {
+                var toolbar = new InkToolbar();
+                var button = new InkToolbarCustomPenButton { CustomPen = new TestHighlighterPen() };
+                toolbar.Children.Add(button);
+                toolbar.ActiveTool = button;
+
+                var attrs = toolbar.InkDrawingAttributes;
+                Verify.IsNotNull(attrs, "The active custom pen should give the toolbar drawing attributes.");
+                Verify.IsTrue(attrs.DrawAsHighlighter, "The toolbar should use the custom pen's attributes (DrawAsHighlighter).");
+                Verify.AreEqual(global::Windows.UI.Input.Inking.PenTipShape.Rectangle, attrs.PenTip, "The toolbar should use the custom pen's PenTip.");
+                Verify.IsTrue(attrs.IgnorePressure, "The toolbar should use the custom pen's IgnorePressure.");
+                Verify.IsFalse(attrs.FitToCurve, "The toolbar should use the custom pen's FitToCurve.");
+            });
+        }
+
         [TestMethod]
         public void InkToolbarCustomPenButtonTest()
         {

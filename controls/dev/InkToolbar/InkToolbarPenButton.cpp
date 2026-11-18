@@ -112,14 +112,24 @@ void InkToolbarPenButton::UpdatePenButtonHelpText()
 }
 
 // UWP DetermineStrokeWidth: the config slider's SelectedStrokeWidth clamped to [Min, Max].
+namespace
+{
+    float ClampStrokeWidth(double width, double minWidth, double maxWidth)
+    {
+        if (width < minWidth) { width = minWidth; }
+        if (maxWidth > 0 && width > maxWidth) { width = maxWidth; }
+        return static_cast<float>(width);
+    }
+}
+
 float InkToolbarPenButton::DetermineStrokeWidth(winrt::InkToolbarPenButton const& penButton)
 {
-    double width = penButton.SelectedStrokeWidth();
-    double minWidth = penButton.MinStrokeWidth();
-    double maxWidth = penButton.MaxStrokeWidth();
-    if (width < minWidth) { width = minWidth; }
-    if (maxWidth > 0 && width > maxWidth) { width = maxWidth; }
-    return static_cast<float>(width);
+    return ClampStrokeWidth(penButton.SelectedStrokeWidth(), penButton.MinStrokeWidth(), penButton.MaxStrokeWidth());
+}
+
+float InkToolbarPenButton::DetermineStrokeWidth()
+{
+    return ClampStrokeWidth(SelectedStrokeWidth(), MinStrokeWidth(), MaxStrokeWidth());
 }
 
 bool InkToolbarPenButton::IsHighContrast()
