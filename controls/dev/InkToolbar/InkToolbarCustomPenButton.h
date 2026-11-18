@@ -34,8 +34,7 @@ public:
     {
         if (auto customPen = CustomPen())
         {
-            auto self = this->try_as<winrt::InkToolbarPenButton>();
-            float w = InkToolbarPenButton::DetermineStrokeWidth(self);
+            float w = DetermineStrokeWidth();
             return customPen.CreateInkDrawingAttributes(SelectedBrush(), w);
         }
         return nullptr;

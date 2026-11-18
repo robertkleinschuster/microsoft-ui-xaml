@@ -41,8 +41,7 @@ public:
         {
             attrs.Color(solid.Color());
         }
-        auto self = this->try_as<winrt::InkToolbarPenButton>();
-        float w = InkToolbarPenButton::DetermineStrokeWidth(self);
+        float w = DetermineStrokeWidth();
         attrs.Size({ w, w });
         attrs.PenTip(winrt::Windows::UI::Input::Inking::PenTipShape::Circle);
         return attrs;

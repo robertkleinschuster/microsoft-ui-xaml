@@ -16,7 +16,9 @@ public:
 
     winrt::InkDrawingAttributes CreateInkDrawingAttributes(winrt::Brush brush, double strokeWidth)
     {
-        return CreateInkDrawingAttributesCore(brush, strokeWidth);
+        // Dispatch through the overridable interface so a derived pen's CreateInkDrawingAttributesCore runs; calling
+        // the member directly always took this class's default implementation.
+        return overridable().CreateInkDrawingAttributesCore(brush, strokeWidth);
     }
 
     winrt::InkDrawingAttributes CreateInkDrawingAttributesCore(winrt::Brush brush, double strokeWidth)
